@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 
-	"go.yaml.in/yaml/v3"
+	"gopkg.in/yaml.v3"
 )
 
 func Load(filepath string) (*Gateway, error) {
@@ -17,6 +18,14 @@ func Load(filepath string) (*Gateway, error) {
 
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
 		return nil, fmt.Errorf("failed to parse yaml: %w", err)
+	}
+
+	for i := range cfg.Routes {
+		parsedUrl, err := url.Parse(cfg.Routes[i].Target)
+		if err != nil {
+			return nil, fmt.Errorf("invalid target url in config: %w", err)
+		}
+		cfg.Routes[i].ParsedURL = parsedUrl
 	}
 
 	return &cfg, nil

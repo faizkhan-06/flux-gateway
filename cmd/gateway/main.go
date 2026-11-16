@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -28,11 +29,11 @@ func main() {
 		slog.Int("total_routes", len(cfg.Routes)),
 	)
 
-	hardcodedTarget := "http://localhost:8081"
-	p := proxy.New(hardcodedTarget)
-	slog.Info("Flux Gateway running", slog.String("port", "8080"), slog.String("target", hardcodedTarget))
+	p := proxy.New(cfg)
+	slog.Info("Flux Gateway running", slog.Int("port", cfg.Server.Port))
 
-	if err := http.ListenAndServe(":8080", p); err != nil {
+	serverAddr := fmt.Sprintf(":%d", cfg.Server.Port)
+	if err := http.ListenAndServe(serverAddr, p); err != nil {
 		slog.Error("Gateway server crashed", slog.Any("error", err))
 		os.Exit(1)
 	}

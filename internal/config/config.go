@@ -1,5 +1,7 @@
 package config
 
+import "net/url"
+
 type Gateway struct {
 	Server Server   `yaml:"server"`
 	Routes []Routes `yaml:"routes"`
@@ -10,6 +12,7 @@ type Server struct {
 }
 
 type Routes struct {
-	Path   string `yaml:"path"`
-	Target string `yaml:"target"`
+	Path      string `yaml:"path"`
+	Target    string `yaml:"target"`
+	ParsedURL *url.URL
 }
